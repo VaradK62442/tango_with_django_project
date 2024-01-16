@@ -1,3 +1,11 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 
-# Create your views here.
+# each view exists here as a series of individual functions
+# each view takes in at least one argument - a HttpRequest object
+    # conventionally named request
+# each view must return a HttpResponse object
+    # simple object takes in string param representing content of the page
+
+def index(request):
+    return HttpResponse("Rango says hey there partner!")
