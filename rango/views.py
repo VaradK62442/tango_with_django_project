@@ -8,4 +8,8 @@ from django.http import HttpResponse
     # simple object takes in string param representing content of the page
 
 def index(request):
-    return HttpResponse("Rango says hey there partner!")
+    return HttpResponse("Rango says hey there partner!\n<a href='/rango/about/'>About page</a>")
+
+
+def about(request):
+    return HttpResponse("Rango says here is the about page.\n<a href='/rango/'>Home page</a>")

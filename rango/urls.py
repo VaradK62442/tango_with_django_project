@@ -7,4 +7,7 @@ urlpatterns = [
         path('', views.index, name='index'),
         # allows us to call the function url and point to `index` view
         # assume host portion of url has already been stripped away
+
+        path('about/', views.about, name='about')
+        # map about to about page
 ]
