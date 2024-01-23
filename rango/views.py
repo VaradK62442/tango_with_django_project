@@ -16,10 +16,12 @@ def index(request):
     # retrieve top 5 only, or all if less than 5
     # place list in context_dict that will be passed to template
     category_list = Category.objects.order_by('-likes')[:5]
+    page_list = Page.objects.order_by('-views')[:5]
 
     context_dict = {}
     context_dict['boldmessage'] = 'Crunchy, creamy, cookie, candy, cupcake!'
     context_dict['categories'] = category_list
+    context_dict['pages'] = page_list
 
     # render response and send it back
     return render(request, 'rango/index.html', context=context_dict)
@@ -48,6 +50,7 @@ def show_category(request, category_name_slug):
 
     except Category.DoesNotExist:
         # template will display "no category" message
-        context_dict['category'], context_dict['pages'] = None, None
+        context_dict['category'] = None
+        context_dict['pages'] = None
 
     return render(request, 'rango/category.html', context=context_dict)
