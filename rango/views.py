@@ -4,6 +4,11 @@ from django.http import HttpResponse
 from rango.models import Category
 from rango.models import Page
 
+from rango.forms import CategoryForm
+from rango.forms import PageForm
+from django.shortcuts import redirect
+from django.urls import reverse
+
 # each view exists here as a series of individual functions
 # each view takes in at least one argument - a HttpRequest object
     # conventionally named request
@@ -54,3 +59,55 @@ def show_category(request, category_name_slug):
         context_dict['pages'] = None
 
     return render(request, 'rango/category.html', context=context_dict)
+
+def add_category(request):
+    form = CategoryForm()
+
+    # a HTTP POST?
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+
+        # provided with valid form?
+        if form.is_valid():
+            # save new category to the database
+            form.save(commit=True)
+            # redirect user to index view
+            return redirect('/rango/')
+        else:
+            # supplied form contains errors
+            print(form.errors)
+
+    return render(request, 'rango/add_category.html', {'form': form})
+
+def add_page(request, category_name_slug):
+    try:
+        category = Category.objects.get(slug=category_name_slug)
+    except Category.DoesNotExist:
+        category = None
+
+    # cannot add page to category that does not exist
+    if category is None:
+        return redirect('/rango/')
+
+    form = PageForm()
+
+    if request.method == 'POST':
+        form = PageForm(request.POST)
+
+        if form.is_valid():
+            if category:
+                page = form.save(commit=False)
+                page.category = category
+                page.views = 0
+                page.save()
+
+                # reverse looks up URL names in urls.py
+                # if match is found, complete url is returned
+                return redirect(reverse('rango:show_category', 
+                    kwargs={'category_name_slug': category_name_slug}))
+
+        else:
+            print(form.errors)
+
+    context_dict = {'form': form, 'category': category}
+    return render(request, 'rango/add_page.html', context=context_dict)
